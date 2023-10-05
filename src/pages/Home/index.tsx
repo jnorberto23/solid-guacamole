@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   Text,
   SafeAreaView,
@@ -8,9 +8,14 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import SelectDropdown from 'react-native-select-dropdown';
-import { ChevronDown, ChevronUp } from 'react-native-feather';
+import {ChevronDown, ChevronUp} from 'react-native-feather';
 
-import { colors } from '../../config/themes/colors';
+import {colors} from '../../config/themes/colors';
+import {useNavigation} from '@react-navigation/native';
+
+type Nav = {
+  navigate: (value: string) => void;
+};
 
 export default function Home() {
   const [keyWord, setKeyWord] = useState('');
@@ -22,8 +27,11 @@ export default function Home() {
     setDifficulty(selectedItem);
   };
 
+  const navigation: Nav = useNavigation();
+
   const startQuiz = () => {
     console.log('Iniciou o quiz');
+    navigation.navigate('Trivia');
   };
 
   return (
@@ -39,7 +47,7 @@ export default function Home() {
           }}
           defaultButtonText={difficulty}
           buttonStyle={styles.inputDifficulty}
-          buttonTextStyle={{ color: colors.white }}
+          buttonTextStyle={{color: colors.white}}
           buttonTextAfterSelection={selectedItem => selectedItem}
           rowTextForSelection={item => item}
           renderDropdownIcon={isOpened =>
@@ -75,7 +83,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.darkPurple, 
+    backgroundColor: colors.darkPurple,
   },
   title: {
     fontSize: 32,
@@ -85,9 +93,9 @@ const styles = StyleSheet.create({
   },
   instructions: {
     fontSize: 20,
-    color: colors.white, 
+    color: colors.white,
     marginBottom: 10,
-    textAlign: 'center'
+    textAlign: 'center',
   },
   dropdownContainer: {
     justifyContent: 'center',
@@ -112,7 +120,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     fontSize: 20,
     padding: 10,
-    textAlign: 'center'
+    textAlign: 'center',
   },
   startButton: {
     backgroundColor: colors.purple,
