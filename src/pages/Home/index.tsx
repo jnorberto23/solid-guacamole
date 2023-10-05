@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   Text,
   SafeAreaView,
@@ -8,9 +8,9 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import SelectDropdown from 'react-native-select-dropdown';
-import {ChevronDown, ChevronUp} from 'react-native-feather';
+import { ChevronDown, ChevronUp } from 'react-native-feather';
 
-import {colors} from '../../config/themes/colors';
+import { colors } from '../../config/themes/colors';
 
 export default function Home() {
   const [keyWord, setKeyWord] = useState('');
@@ -30,9 +30,8 @@ export default function Home() {
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>SOLID GUACAMOLE</Text>
 
-  
       <View style={styles.dropdownContainer}>
-        <Text style={styles.instructions}>Escolha a dificuldade:</Text>
+        <Text style={styles.instructions}>Escolha a dificuldade</Text>
         <SelectDropdown
           data={difficultyOptions}
           onSelect={selectedItem => {
@@ -40,7 +39,7 @@ export default function Home() {
           }}
           defaultButtonText={difficulty}
           buttonStyle={styles.inputDifficulty}
-          buttonTextStyle={{color: colors.white}}
+          buttonTextStyle={{ color: colors.white }}
           buttonTextAfterSelection={selectedItem => selectedItem}
           rowTextForSelection={item => item}
           renderDropdownIcon={isOpened =>
@@ -54,7 +53,7 @@ export default function Home() {
       </View>
 
       <View style={styles.inputContainer}>
-        <Text style={styles.instructions}>Digite o tema:</Text>
+        <Text style={styles.instructions}>Digite o tema</Text>
         <TextInput
           placeholder="Palavra-chave"
           placeholderTextColor={colors.white}
@@ -76,7 +75,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.white,
+    backgroundColor: colors.darkPurple, 
   },
   title: {
     fontSize: 32,
@@ -86,18 +85,19 @@ const styles = StyleSheet.create({
   },
   instructions: {
     fontSize: 20,
-    color: colors.darkGrey,
+    color: colors.white, 
     marginBottom: 10,
+    textAlign: 'center'
   },
   dropdownContainer: {
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 20,
-    width: '80%', 
+    width: '80%',
   },
   inputContainer: {
     marginBottom: 20,
-    width: '80%', 
+    width: '80%',
   },
   inputDifficulty: {
     backgroundColor: colors.darkGrey,
@@ -112,6 +112,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     fontSize: 20,
     padding: 10,
+    textAlign: 'center'
   },
   startButton: {
     backgroundColor: colors.purple,
