@@ -2,6 +2,7 @@ import {Text, SafeAreaView, StyleSheet} from 'react-native';
 import * as React from 'react';
 
 export default function History() {
+  const [keyWord, setKeyWord] = React.useState('')
   return (
     <SafeAreaView style={styles.container}>
       <Text>History</Text>
