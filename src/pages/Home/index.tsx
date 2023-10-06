@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Text,
   SafeAreaView,
@@ -12,22 +12,32 @@ import {ChevronDown, ChevronUp} from 'react-native-feather';
 
 import {colors} from '../../config/themes/colors';
 import {useNavigation} from '@react-navigation/native';
+import {fetchCategory} from '../../lib/http';
 
-type Nav = {
+type TNav = {
   navigate: (value: string) => void;
 };
 
-export default function Home() {
-  const [keyWord, setKeyWord] = useState('');
-  const [difficulty, setDifficulty] = useState('Fácil');
+type TCategory = {
+  id: number;
+  name: string;
+};
 
+export default async function Home() {
+  const [difficulty, setDifficulty] = useState('Fácil');
+  const [category, setCategory] = useState(0);
   const difficultyOptions = ['Fácil', 'Médio', 'Difícil'];
+
+  const categoryOptions: TCategory[] = await fetchCategory();
 
   const handleDifficultyChange = (selectedItem: string) => {
     setDifficulty(selectedItem);
   };
+  const handleCategoryChange = (selectedItem: number) => {
+    setCategory(selectedItem);
+  };
 
-  const navigation: Nav = useNavigation();
+  const navigation: TNav = useNavigation();
 
   const startQuiz = () => {
     console.log('Iniciou o quiz');
@@ -39,14 +49,14 @@ export default function Home() {
       <Text style={styles.title}>SOLID GUACAMOLE</Text>
 
       <View style={styles.dropdownContainer}>
-        <Text style={styles.instructions}>Escolha a dificuldade</Text>
+        <Text style={styles.instructions}>Choose difficulty</Text>
         <SelectDropdown
           data={difficultyOptions}
           onSelect={selectedItem => {
             handleDifficultyChange(selectedItem);
           }}
           defaultButtonText={difficulty}
-          buttonStyle={styles.inputDifficulty}
+          buttonStyle={styles.input}
           buttonTextStyle={{color: colors.white}}
           buttonTextAfterSelection={selectedItem => selectedItem}
           rowTextForSelection={item => item}
@@ -60,19 +70,30 @@ export default function Home() {
         />
       </View>
 
-      <View style={styles.inputContainer}>
-        <Text style={styles.instructions}>Digite o tema</Text>
-        <TextInput
-          placeholder="Palavra-chave"
-          placeholderTextColor={colors.white}
-          style={styles.inputKeyword}
-          onChangeText={setKeyWord}
-          value={keyWord}
+      <View style={styles.dropdownContainer}>
+        <Text style={styles.instructions}>Choose category</Text>
+        <SelectDropdown
+          data={categoryOptions}
+          onSelect={({id}) => {
+            handleCategoryChange(id);
+          }}
+          defaultButtonText={difficulty}
+          buttonStyle={styles.input}
+          buttonTextStyle={{color: colors.white}}
+          buttonTextAfterSelection={({name}) => name}
+          rowTextForSelection={item => item}
+          renderDropdownIcon={isOpened =>
+            isOpened ? (
+              <ChevronUp stroke="white" width={16} height={16} />
+            ) : (
+              <ChevronDown stroke="white" width={16} height={16} />
+            )
+          }
         />
       </View>
 
       <TouchableOpacity style={styles.startButton} onPress={startQuiz}>
-        <Text style={styles.startButtonText}>Iniciar Quiz</Text>
+        <Text style={styles.startButtonText}>Start Quiz</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
@@ -103,24 +124,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     width: '80%',
   },
-  inputContainer: {
-    marginBottom: 20,
-    width: '80%',
-  },
-  inputDifficulty: {
+
+  input: {
     backgroundColor: colors.darkGrey,
     color: colors.white,
     borderRadius: 10,
     fontSize: 20,
     padding: 10,
-  },
-  inputKeyword: {
-    backgroundColor: colors.darkGrey,
-    color: colors.white,
-    borderRadius: 10,
-    fontSize: 20,
-    padding: 10,
-    textAlign: 'center',
   },
   startButton: {
     backgroundColor: colors.purple,
