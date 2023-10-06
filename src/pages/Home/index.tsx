@@ -12,7 +12,8 @@ import {ChevronDown, ChevronUp} from 'react-native-feather';
 
 import {colors} from '../../config/themes/colors';
 import {useNavigation} from '@react-navigation/native';
-import {fetchCategory} from '../../lib/http';
+import {fetchCategory, fetchQuestions} from '../../lib/http';
+import {useQuestionsStore} from '../../store/QuestionsStore';
 
 type TNav = {
   navigate: (value: string) => void;
@@ -24,8 +25,10 @@ type TCategory = {
 };
 
 export default function Home() {
-  const [difficulty, setDifficulty] = useState('Fácil');
-  const [category, setCategory] = useState('');
+  const setQuestions = useQuestionsStore(state => state.setQuestions);
+
+  const [difficulty, setDifficulty] = useState('Easy');
+  const [category, setCategory] = useState(1);
   const [categoryOptions, setCategoryOptions] = useState<TCategory[]>([]);
 
   const difficultyOptions = ['Easy', 'Medium', 'Hard'];
@@ -33,14 +36,15 @@ export default function Home() {
   const handleDifficultyChange = (selectedItem: string) => {
     setDifficulty(selectedItem);
   };
-  const handleCategoryChange = (selectedItem: string) => {
+  const handleCategoryChange = (selectedItem: number) => {
     setCategory(selectedItem);
   };
 
   const navigation: TNav = useNavigation();
 
-  const startQuiz = () => {
-    console.log('Iniciou o quiz');
+  const startQuiz = async () => {
+    const result = await fetchQuestions(category, difficulty);
+    setQuestions(result);
     navigation.navigate('Trivia');
   };
 
@@ -90,8 +94,7 @@ export default function Home() {
           onSelect={selectedItem => {
             handleCategoryChange(selectedItem.id);
           }}
-          searchPlaceHolder='Category'
-          defaultButtonText={category}
+          searchPlaceHolder="Category"
           buttonStyle={styles.input}
           buttonTextStyle={styles.input}
           buttonTextAfterSelection={selectedItem => selectedItem.name}
@@ -145,7 +148,7 @@ const styles = StyleSheet.create({
     color: colors.white,
     borderRadius: 10,
     fontSize: 14,
-    width: '95%'
+    width: '95%',
   },
   rowText: {
     fontSize: 12,
@@ -161,5 +164,4 @@ const styles = StyleSheet.create({
     color: colors.white,
     fontWeight: 'bold',
   },
-
 });
