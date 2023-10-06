@@ -23,17 +23,17 @@ type TCategory = {
   name: string;
 };
 
-export default async function Home() {
+export default function Home() {
   const [difficulty, setDifficulty] = useState('Fácil');
-  const [category, setCategory] = useState(0);
-  const difficultyOptions = ['Fácil', 'Médio', 'Difícil'];
+  const [category, setCategory] = useState('');
+  const [categoryOptions, setCategoryOptions] = useState<TCategory[]>([]);
 
-  const categoryOptions: TCategory[] = await fetchCategory();
+  const difficultyOptions = ['Easy', 'Medium', 'Hard'];
 
   const handleDifficultyChange = (selectedItem: string) => {
     setDifficulty(selectedItem);
   };
-  const handleCategoryChange = (selectedItem: number) => {
+  const handleCategoryChange = (selectedItem: string) => {
     setCategory(selectedItem);
   };
 
@@ -43,6 +43,18 @@ export default async function Home() {
     console.log('Iniciou o quiz');
     navigation.navigate('Trivia');
   };
+
+  useEffect(() => {
+    async function getCategory() {
+      try {
+        const categories = await fetchCategory();
+        setCategoryOptions(categories);
+      } catch (error) {
+        console.error('Erro ao buscar categorias:', error);
+      }
+    }
+    getCategory();
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -57,9 +69,10 @@ export default async function Home() {
           }}
           defaultButtonText={difficulty}
           buttonStyle={styles.input}
-          buttonTextStyle={{color: colors.white}}
+          buttonTextStyle={styles.input}
           buttonTextAfterSelection={selectedItem => selectedItem}
           rowTextForSelection={item => item}
+          rowTextStyle={styles.rowText}
           renderDropdownIcon={isOpened =>
             isOpened ? (
               <ChevronUp stroke="white" width={16} height={16} />
@@ -74,14 +87,16 @@ export default async function Home() {
         <Text style={styles.instructions}>Choose category</Text>
         <SelectDropdown
           data={categoryOptions}
-          onSelect={({id}) => {
-            handleCategoryChange(id);
+          onSelect={selectedItem => {
+            handleCategoryChange(selectedItem.id);
           }}
-          defaultButtonText={difficulty}
+          searchPlaceHolder='Category'
+          defaultButtonText={category}
           buttonStyle={styles.input}
-          buttonTextStyle={{color: colors.white}}
-          buttonTextAfterSelection={({name}) => name}
-          rowTextForSelection={item => item}
+          buttonTextStyle={styles.input}
+          buttonTextAfterSelection={selectedItem => selectedItem.name}
+          rowTextForSelection={item => item.name}
+          rowTextStyle={styles.rowText}
           renderDropdownIcon={isOpened =>
             isOpened ? (
               <ChevronUp stroke="white" width={16} height={16} />
@@ -129,8 +144,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.darkGrey,
     color: colors.white,
     borderRadius: 10,
-    fontSize: 20,
-    padding: 10,
+    fontSize: 14,
+    width: '95%'
+  },
+  rowText: {
+    fontSize: 12,
   },
   startButton: {
     backgroundColor: colors.purple,
@@ -143,4 +161,5 @@ const styles = StyleSheet.create({
     color: colors.white,
     fontWeight: 'bold',
   },
+
 });
