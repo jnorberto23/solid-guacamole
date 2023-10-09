@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   Text,
   SafeAreaView,
@@ -6,65 +6,65 @@ import {
   View,
   TouchableOpacity,
 } from 'react-native';
-import { Clock } from 'react-native-feather';
+import {Clock} from 'react-native-feather';
 
-import { colors } from '../../config/themes/colors';
+import {colors} from '../../config/themes/colors';
+import {useQuestionsStore} from '../../store/QuestionsStore';
 
 export default function Trivia() {
   const [selectedOption, setSelectedOption] = useState('');
-  const [questionNumber, setQuestionNumber] = useState(1);
-  const [seconds, setSeconds] = useState(0); 
-  const [minutes, setMinutes] = useState(0); 
+  const [seconds, setSeconds] = useState(0);
+  const [minutes, setMinutes] = useState(0);
   const [timerRunning, setTimerRunning] = useState(false);
-
-  const question = 'Qual é a capital da França?';
-  const options = [
-    { key: 'a', text: 'Londres' },
-    { key: 'b', text: 'Madrid' },
-    { key: 'c', text: 'Berlim' },
-    { key: 'd', text: 'Paris' },
-    { key: 'e', text: 'Roma' },
-  ];
+  const [index, setIndex] = useState(0);
+  const questions = useQuestionsStore(state => state.questions);
 
   const handleOptionClick = (option: string) => {
     setSelectedOption(option);
   };
 
-  useEffect(() => {
-    if (!timerRunning) {
-      setSeconds(0);
-      setMinutes(0);
-      setTimerRunning(true);
-    }
+  const goToNextQuestion = () => {
+    setSelectedOption(''); 
+    setIndex(index + 1); 
+  };
 
-    const interval = setInterval(() => {
-      if (seconds < 59) {
-        setSeconds(seconds + 1);
-      } else {
-        setSeconds(0);
-        setMinutes(minutes + 1);
-      }
-    }, 1000);
+  // useEffect(() => {
+  //   if (!timerRunning) {
+  //     setSeconds(0);
+  //     setMinutes(0);
+  //     setTimerRunning(true);
+  //   }
 
-    return () => clearInterval(interval);
-  }, [seconds, minutes, timerRunning]);
+  //   const interval = setInterval(() => {
+  //     if (seconds < 59) {
+  //       setSeconds(seconds + 1);
+  //     } else {
+  //       setSeconds(0);
+  //       setMinutes(minutes + 1);
+  //     }
+  //   }, 1000);
+
+  //   return () => clearInterval(interval);
+  // }, [seconds, minutes, timerRunning]);
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.questionNumber}>Questão {questionNumber}</Text>
+        <Text style={styles.questionNumber}>Question {index + 1}</Text>
         <View style={styles.timerContainer}>
           <Clock stroke="white" width={16} height={16} />
           <Text style={styles.timerText}>
-            {minutes < 10 ? '0' : ''}{minutes} : {seconds < 10 ? '0' : ''}{seconds} 
+            {minutes < 10 ? '0' : ''}
+            {minutes} : {seconds < 10 ? '0' : ''}
+            {seconds}
           </Text>
         </View>
       </View>
 
-      <Text style={styles.question}>{question}</Text>
+      <Text style={styles.question}>{questions[index].description}</Text>
 
       <View style={styles.optionsContainer}>
-        {options.map((option) => (
+        {questions[index].answers.map(option => (
           <TouchableOpacity
             key={option.key}
             style={[
@@ -76,6 +76,12 @@ export default function Trivia() {
           </TouchableOpacity>
         ))}
       </View>
+
+      <TouchableOpacity style={styles.nextButton} onPress={goToNextQuestion}>
+        <Text style={styles.nextButtonText}>
+          {index < questions.length - 1 ? 'Next Question' : 'Finish Trivia'}
+        </Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
@@ -93,6 +99,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 20,
+    gap: 20
   },
   questionNumber: {
     fontSize: 18,
@@ -109,14 +116,14 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
   question: {
-    fontSize: 32,
+    fontSize: 22,
     fontWeight: 'bold',
     color: colors.red,
     marginBottom: 20,
     textAlign: 'center',
   },
   optionsContainer: {
-    width: '90%'
+    width: '90%',
   },
   optionButton: {
     backgroundColor: colors.darkGrey,
@@ -126,11 +133,23 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   optionText: {
-    fontSize: 18,
+    fontSize: 16,
     color: colors.white,
     textAlign: 'center',
   },
   selectedOption: {
     backgroundColor: colors.purple,
+  },
+  nextButton: {
+    backgroundColor: colors.red,
+    borderRadius: 10,
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    marginVertical: 10,
+  },
+  nextButtonText: {
+    fontSize: 18,
+    color: colors.white,
+    textAlign: 'center',
   },
 });
