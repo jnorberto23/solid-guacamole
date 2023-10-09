@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import {create} from 'zustand';
 
 type QuizQuestion = {
   category: string;
@@ -12,6 +12,7 @@ type QuizQuestion = {
 interface AnswerData {
   key: string;
   text: string;
+  isCorrect: boolean;
 }
 
 interface QuestionData {
@@ -23,21 +24,24 @@ interface QuestionsState {
   questions: QuestionData[];
   setQuestions: (questions: QuizQuestion[]) => void;
 }
-export const useQuestionsStore = create<QuestionsState>((set) => ({
+export const useQuestionsStore = create<QuestionsState>(set => ({
   questions: [],
   setQuestions: (questions: QuizQuestion[]) =>
     set({
-      questions: questions.map((question) => {
-      
+      questions: questions.map(question => {
         const answers: AnswerData[] = [
-          { key: Math.random().toString(), text: question.correct_answer },
-          ...question.incorrect_answers.map((answer) => ({
+          {
+            key: Math.random().toString(),
+            text: question.correct_answer,
+            isCorrect: true,
+          },
+          ...question.incorrect_answers.map(answer => ({
             key: Math.random().toString(),
             text: answer,
+            isCorrect: false,
           })),
         ];
 
-     
         answers.sort(() => Math.random() - 0.5);
 
         return {
