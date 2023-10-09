@@ -28,24 +28,24 @@ export default function Trivia() {
     setIndex(index + 1); 
   };
 
-  // useEffect(() => {
-  //   if (!timerRunning) {
-  //     setSeconds(0);
-  //     setMinutes(0);
-  //     setTimerRunning(true);
-  //   }
+  useEffect(() => {
+    if (!timerRunning) {
+      setSeconds(0);
+      setMinutes(0);
+      setTimerRunning(true);
+    }
 
-  //   const interval = setInterval(() => {
-  //     if (seconds < 59) {
-  //       setSeconds(seconds + 1);
-  //     } else {
-  //       setSeconds(0);
-  //       setMinutes(minutes + 1);
-  //     }
-  //   }, 1000);
+    const interval = setInterval(() => {
+      if (seconds < 59) {
+        setSeconds(seconds + 1);
+      } else {
+        setSeconds(0);
+        setMinutes(minutes + 1);
+      }
+    }, 1000);
 
-  //   return () => clearInterval(interval);
-  // }, [seconds, minutes, timerRunning]);
+    return () => clearInterval(interval);
+  }, [seconds, minutes, timerRunning]);
 
   return (
     <SafeAreaView style={styles.container}>
