@@ -10,22 +10,43 @@ import {Clock} from 'react-native-feather';
 
 import {colors} from '../../config/themes/colors';
 import {useQuestionsStore} from '../../store/QuestionsStore';
+import {useNavigation} from '@react-navigation/native';
 
+type TOption = {
+  key: string;
+  text: string;
+  isCorrect: boolean;
+};
+
+type TNav = {
+  navigate: (value: string) => void;
+};
 export default function Trivia() {
+  const navigation: TNav = useNavigation();
+
   const [selectedOption, setSelectedOption] = useState('');
   const [seconds, setSeconds] = useState(0);
   const [minutes, setMinutes] = useState(0);
   const [timerRunning, setTimerRunning] = useState(false);
   const [index, setIndex] = useState(0);
   const questions = useQuestionsStore(state => state.questions);
+  const setCorrectQuestionsCount = useQuestionsStore(
+    state => state.setCorrectQuestionsCount,
+  );
 
-  const handleOptionClick = (option: string) => {
-    setSelectedOption(option);
+  const handleOptionClick = (option: TOption) => {
+    setSelectedOption(option.key);
+    if (option.isCorrect) {
+      setCorrectQuestionsCount();
+    }
+  };
+  const handleFinishTrivia = () => {
+    navigation.navigate('Result');
   };
 
   const goToNextQuestion = () => {
-    setSelectedOption(''); 
-    setIndex(index + 1); 
+    setSelectedOption('');
+    setIndex(index + 1);
   };
 
   useEffect(() => {
@@ -71,17 +92,22 @@ export default function Trivia() {
               styles.optionButton,
               selectedOption === option.key && styles.selectedOption,
             ]}
-            onPress={() => handleOptionClick(option.key)}>
+            onPress={() => handleOptionClick(option)}>
             <Text style={styles.optionText}>{option.text}</Text>
           </TouchableOpacity>
         ))}
       </View>
-
-      <TouchableOpacity style={styles.nextButton} onPress={goToNextQuestion}>
-        <Text style={styles.nextButtonText}>
-          {index < questions.length - 1 ? 'Next Question' : 'Finish Trivia'}
-        </Text>
-      </TouchableOpacity>
+      {index < questions.length - 1 ? (
+        <TouchableOpacity style={styles.nextButton} onPress={goToNextQuestion}>
+          <Text style={styles.nextButtonText}>Next Question</Text>
+        </TouchableOpacity>
+      ) : (
+        <TouchableOpacity
+          style={styles.nextButton}
+          onPress={handleFinishTrivia}>
+          <Text style={styles.nextButtonText}>Finish Trivia</Text>
+        </TouchableOpacity>
+      )}
     </SafeAreaView>
   );
 }
@@ -99,7 +125,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 20,
-    gap: 20
+    gap: 20,
   },
   questionNumber: {
     fontSize: 18,

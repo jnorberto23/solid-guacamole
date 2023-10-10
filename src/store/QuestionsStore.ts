@@ -22,20 +22,23 @@ interface QuestionData {
 
 interface QuestionsState {
   questions: QuestionData[];
+  correctQuestionsCount: number;
+  setCorrectQuestionsCount: () => void;
   setQuestions: (questions: QuizQuestion[]) => void;
 }
-export const useQuestionsStore = create<QuestionsState>(set => ({
+export const useQuestionsStore = create<QuestionsState>((set) => ({
   questions: [],
+  correctQuestionsCount: 0, // Inicialize com 0
   setQuestions: (questions: QuizQuestion[]) =>
     set({
-      questions: questions.map(question => {
+      questions: questions.map((question) => {
         const answers: AnswerData[] = [
           {
             key: Math.random().toString(),
             text: question.correct_answer,
             isCorrect: true,
           },
-          ...question.incorrect_answers.map(answer => ({
+          ...question.incorrect_answers.map((answer) => ({
             key: Math.random().toString(),
             text: answer,
             isCorrect: false,
@@ -50,4 +53,6 @@ export const useQuestionsStore = create<QuestionsState>(set => ({
         };
       }),
     }),
+  setCorrectQuestionsCount: () =>
+    set((state) => ({ correctQuestionsCount: state.correctQuestionsCount + 1 })),
 }));
